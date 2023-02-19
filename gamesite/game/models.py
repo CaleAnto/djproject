@@ -26,8 +26,8 @@ class News(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
     image = models.ImageField(upload_to="images/")
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    author_id = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
