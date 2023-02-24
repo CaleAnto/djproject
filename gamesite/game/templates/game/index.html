@@ -98,35 +98,36 @@
         <div class="container">
             <div class="nk-nav-table">
 
-                <a href="/" class="nk-nav-logo">
+                <a href="{% url 'home' %}" class="nk-nav-logo">
                     <img src="{% static 'game/images/logo.png' %}" alt="GoodGames" width="50">
                 </a>
 
                 <ul class="nk-nav nk-nav-right d-none d-lg-table-cell" data-nav-mobile="#nk-nav-mobile">
-
-       <li>
-            <a href="#">
-                Profile
-            </a>
-        </li>
-
+    {% for m in menu %}
         <li>
-            <a href="#">
-                Sign In
+            <a href="{% url m.url_name %}">
+                {{ m.title }}
             </a>
         </li>
+    {% endfor %}
 
-        <li>
-            <a href="#">
-                Log In
-            </a>
-        </li>
-
-        <li>
-            <a href="/about/">
-                About
-            </a>
-        </li>
+{#        <li>#}
+{#            <a href="#">#}
+{#                Sign In#}
+{#            </a>#}
+{#        </li>#}
+{##}
+{#        <li>#}
+{#            <a href="#">#}
+{#                Log In#}
+{#            </a>#}
+{#        </li>#}
+{##}
+{#        <li>#}
+{#            <a href="{% url 'about' %}">#}
+{#                About#}
+{#            </a>#}
+{#        </li>#}
 
                     </ul>
         </li>
@@ -189,7 +190,7 @@
     <ul class="nk-breadcrumbs">
         
         
-        <li><a href="/">Home</a></li>
+        <li><a href="{% url 'home' %}">Home</a></li>
         
         
         <li><span class="fa fa-angle-right"></span></li>
@@ -214,6 +215,30 @@
                     Additional Classes:
                         .nav-tabs-fill
                 -->
+            <ul class="nav nav-tabs nav-tabs-fill" role="tablist" style="margin-bottom: 20px">
+                {% if cat_selected == 0 %}
+                    <li class="nav-item">
+                        <a class="nav-link active" role="tab" data-toggle="tab">All</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}" role="tab" data-toggle="tab">All</a>
+                    </li>
+                {% endif %}
+
+            {% for c in cats %}
+                {% if c.pk == cat_selected %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#tabs-1-2" role="tab" data-toggle="tab">{{ c.name }}</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ c.get_absolute_url }}" role="tab" data-toggle="tab">{{ c.name }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane fade show active   " id="tabs-1-1">
                         <div class="nk-gap"></div>
@@ -222,80 +247,85 @@
 
 
 
-<div class="nk-blog-post nk-blog-post-border-bottom">
-    <div class="row vertical-gap">
-        <div class="col-lg-3 col-md-5">
-            <a href="#" class="nk-post-img">
-                <img src="assets/images/post-7-mid-square.jpg" alt="At length one of them called out in a clear">
-                
-                <span class="nk-post-categories">
-                    <span class="bg-main-1">Category</span>
-                </span>
-                
-            </a>
-        </div>
-        <div class="col-lg-9 col-md-7">
-            <h2 class="nk-post-title h4"><a href="#">At length one of them called out in a clear</a></h2>
-            <div class="nk-post-date mt-10 mb-10">
-                <span class="fa fa-calendar"></span> Feb 14, 2023
-                <span class="fa fa-comments"></span> <a href="#">0 comments</a>
-            </div>
-            <div class="nk-post-text">
-                <p>TJust then her head struck against the roof of the hall: in fact she was now more than nine feet high, and she at once took up the little golden key and hurried off to the garden door...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="nk-blog-post nk-blog-post-border-bottom">
-    <div class="row vertical-gap">
-        <div class="col-lg-3 col-md-5">
-            <a href="#" class="nk-post-img">
-                <img src="assets/images/post-9-mid-square.jpg" alt="He made his passenger captain of one">
-                
-                <span class="nk-post-categories">
-                    <span class="bg-main-1">Category</span>
-                </span>
-                
-            </a>
-        </div>
-        <div class="col-lg-9 col-md-7">
-            <h2 class="nk-post-title h4"><a href="#">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet, inventore.</a></h2>
-            <div class="nk-post-date mt-10 mb-10">
-                <span class="fa fa-calendar"></span> Feb 15, 2023
-                <span class="fa fa-comments"></span> <a href="#">0 comments</a>
-            </div>
-            <div class="nk-post-text">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dicta in obcaecati tempore tenetur veniam. Architecto aspernatur dolorum eius esse facilis in iure praesentium ratione reprehenderit rerum. Doloremque magni odio ut!...</p>
-            </div>
-        </div>
-    </div>
-</div>
+{#<div class="nk-blog-post nk-blog-post-border-bottom">#}
+{#    <div class="row vertical-gap">#}
+{#        <div class="col-lg-3 col-md-5">#}
+{#            <a href="#" class="nk-post-img">#}
+{#                <img src="assets/images/post-7-mid-square.jpg" alt="At length one of them called out in a clear">#}
+{#                #}
+{#                <span class="nk-post-categories">#}
+{#                    <span class="bg-main-1">Category</span>#}
+{#                </span>#}
+{#                #}
+{#            </a>#}
+{#        </div>#}
+{#        <div class="col-lg-9 col-md-7">#}
+{#            <h2 class="nk-post-title h4"><a href="#">At length one of them called out in a clear</a></h2>#}
+{#            <div class="nk-post-date mt-10 mb-10">#}
+{#                <span class="fa fa-calendar"></span> Feb 14, 2023#}
+{#                <span class="fa fa-comments"></span> <a href="#">0 comments</a>#}
+{#            </div>#}
+{#            <div class="nk-post-text">#}
+{#                <p>TJust then her head struck against the roof of the hall: in fact she was now more than nine feet high, and she at once took up the little golden key and hurried off to the garden door...</p>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+{##}
+{#<div class="nk-blog-post nk-blog-post-border-bottom">#}
+{#    <div class="row vertical-gap">#}
+{#        <div class="col-lg-3 col-md-5">#}
+{#            <a href="#" class="nk-post-img">#}
+{#                <img src="assets/images/post-9-mid-square.jpg" alt="He made his passenger captain of one">#}
+{#                #}
+{#                <span class="nk-post-categories">#}
+{#                    <span class="bg-main-1">Category</span>#}
+{#                </span>#}
+{#                #}
+{#            </a>#}
+{#        </div>#}
+{#        <div class="col-lg-9 col-md-7">#}
+{#            <h2 class="nk-post-title h4"><a href="#">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet, inventore.</a></h2>#}
+{#            <div class="nk-post-date mt-10 mb-10">#}
+{#                <span class="fa fa-calendar"></span> Feb 15, 2023#}
+{#                <span class="fa fa-comments"></span> <a href="#">0 comments</a>#}
+{#            </div>#}
+{#            <div class="nk-post-text">#}
+{#                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dicta in obcaecati tempore tenetur veniam. Architecto aspernatur dolorum eius esse facilis in iure praesentium ratione reprehenderit rerum. Doloremque magni odio ut!...</p>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
 
 {% for p in news %}
-    <div class="nk-blog-post nk-blog-post-border-bottom">
+    <div class="nk-blog-post nk-blog-post-border-bottom" style="margin-bottom: 60px">
         <div class="row vertical-gap">
-            <div class="col-lg-3 col-md-5">
-                <a href="#" class="nk-post-img">
-                    <img src="assets/images/post-9-mid-square.jpg" alt="">
+            <div class="col-lg-3 col-md-6" style="padding: 15px">
+                <a href="{{ p.get_absolute_url }}" class="nk-post-img">
 
-{#                    <span class="nk-post-categories">#}
-{#                        <span class="bg-main-1">Category</span>#}
-{#                    </span>#}
+                    {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="">
+                    {% endif %}
+
+                    <span class="nk-post-categories">
+                        <span class="bg-main-{{p.category_id_id}}">{{p.category_id}}</span>
+                    </span>
 
                 </a>
             </div>
             <div class="col-lg-9 col-md-7">
-                <h2 class="nk-post-title h4"><a href="#">{{ p.title }}</a></h2>
+                <h2 class="nk-post-title h4"><a href="{{ p.get_absolute_url }}">{{p.category_id_name}} {{ p.title }}</a></h2>
                 <div class="nk-post-date mt-10 mb-10">
                     <span class="fa fa-calendar"></span> Feb 15, 2023
                     <span class="fa fa-comments"></span> <a href="#">0 comments</a>
                 </div>
                 <div class="nk-post-text">
-                    <p>{{ p.content }}</p>
+                    <p>{{ p.content|linebreaks|truncatewords:25 }}</p>
                 </div>
             </div>
         </div>
+{#    <div class="nk-gap"></div>#}
+{#    <a href="{{ p.get_absolute_url }}" class="nk-btn nk-btn-rounded nk-btn-color-dark-3 nk-btn-hover-color-main-1" style="padding: 10px 210px">Read More</a>#}
     </div>
 {% endfor %}
 
