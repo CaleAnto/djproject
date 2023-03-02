@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound
 from .models import *
 
@@ -42,11 +42,14 @@ def addpost(request):
 def contact(request):
     return HttpResponse("FeedBack")
 
-def show_post(request, post_id):
-    return HttpResponse(f"Отображение статьи с id = {post_id}")
+def show_post(request, post_slug):
+    news = get_object_or_404(News, slug=post_slug);
+    comment = len(Comment.objects.filter(news_id=news.news_id))
+    return HttpResponse(f"Отображение статьи с id = {post_slug} {news.get_absolute_time()} {comment}" )
 
-def show_category(request, cat_id):
-    news = News.objects.filter(category_id=cat_id)
+def show_category(request, post_slug):
+    category = get_object_or_404(Category, slug=post_slug)
+    news = News.objects.filter(category_id=category.category_id)
     cats = Category.objects.all()
 
     context = {
@@ -54,7 +57,7 @@ def show_category(request, cat_id):
         'cats': cats,
         'menu': menu,
         'title': 'Main Page',
-        'cat_selected': cat_id,
+        'cat_selected': category.category_id,
     }
     return render(request, 'game/index.html', context=context)
 

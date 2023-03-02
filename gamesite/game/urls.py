@@ -9,7 +9,7 @@ urlpatterns = [
     path('addpost/', addpost, name='add_post'),
     path('contact/', contact, name='contact'),
     path('login/', login, name='login'),
-    path('post/<int:post_id>/', show_post, name='post'),
-    path('category/<int:cat_id>/', show_category, name='category'),
+    path('post/<slug:post_slug>/', show_post, name='post'),
+    path('category/<slug:post_slug>/', show_category, name='category'),
 ]
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+import datetime
 
 # Create your models here.
 
@@ -11,18 +12,19 @@ class User(models.Model):
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
     desciption = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('category', kwargs={'cat_id': self.pk})
+        return reverse('category', kwargs={'post_slug': self.slug})
 
     class Meta:
-        verbose_name = 'Category'
-        verbose_name_plural = 'Categories'
+        verbose_name = 'Категории'
+        verbose_name_plural = 'Категории'
         ordering = ['category_id']
 
 class Author(models.Model):
@@ -32,24 +34,33 @@ class Author(models.Model):
 
 class News(models.Model):
     news_id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name="Тема новости")
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
     content = models.TextField(blank=True)
     image = models.ImageField(upload_to="images/")
+    time_create = models.DateTimeField(auto_now_add=True);
+    time_update = models.DateTimeField(auto_now=True);
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.title
 
+    def get_absolute_time(self):
+        return format(self.time_create.strftime('%b %d, %Y'))
+
+    def get_absolute_comment(self):
+        return len(Comment.objects.filter(news_id=self.news_id))
+
     def get_absolute_url(self):
-        return reverse('post', kwargs={'post_id': self.pk})
+        return reverse('post', kwargs={'post_slug': self.slug})
 
     class Meta:
-        verbose_name = "Наши новости"
-        verbose_name_plural = "Наши новости"
+        verbose_name = "Новости"
+        verbose_name_plural = "Новости"
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     content = models.TextField(blank=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    news_id = models.ForeignKey(News, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    news = models.ForeignKey(News, on_delete=models.CASCADE)

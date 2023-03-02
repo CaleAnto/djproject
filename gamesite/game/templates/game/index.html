@@ -1,6 +1,5 @@
-{% load static %}
 <!DOCTYPE html>
-    
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -99,7 +98,7 @@
             <div class="nk-nav-table">
 
                 <a href="{% url 'home' %}" class="nk-nav-logo">
-                    <img src="{% static 'game/images/logo.png' %}" alt="GoodGames" width="50">
+                    <img src="{% static '/game/images/logo.png' %}" alt="GoodGames" width="50">
                 </a>
 
                 <ul class="nk-nav nk-nav-right d-none d-lg-table-cell" data-nav-mobile="#nk-nav-mobile">
@@ -316,8 +315,8 @@
             <div class="col-lg-9 col-md-7">
                 <h2 class="nk-post-title h4"><a href="{{ p.get_absolute_url }}">{{p.category_id_name}} {{ p.title }}</a></h2>
                 <div class="nk-post-date mt-10 mb-10">
-                    <span class="fa fa-calendar"></span> Feb 15, 2023
-                    <span class="fa fa-comments"></span> <a href="#">0 comments</a>
+                    <span class="fa fa-calendar"></span> {{p.get_absolute_time}}
+                    <span class="fa fa-comments"></span> <a href="#">{{p.get_absolute_comment}} comments</a>
                 </div>
                 <div class="nk-post-text">
                     <p>{{ p.content|linebreaks|truncatewords:25 }}</p>
