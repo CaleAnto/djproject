@@ -1,6 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound
+
 from .models import *
+from .forms import *
 
 # Create your views here.
 
@@ -37,7 +39,23 @@ def login(request):
     return HttpResponse("Login")
 
 def addpost(request):
-    return HttpResponse("Add News")
+    if request.method == 'POST':
+        form = AddNewsForm(request.POST, request.FILES)
+        if form.is_valid():
+            #print(form.cleaned_data)
+            form.save()
+            return redirect('home')
+
+
+    else:
+        form = AddNewsForm
+
+    context = {
+        'menu': menu,
+        'form': form,
+        'title': 'Add Page News',
+    }
+    return render(request, 'game/addpost.html', context=context)
 
 def contact(request):
     return HttpResponse("FeedBack")

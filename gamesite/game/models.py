@@ -32,16 +32,19 @@ class Author(models.Model):
     username = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.username
+
 class News(models.Model):
     news_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, verbose_name="Тема новости")
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
-    content = models.TextField(blank=True)
-    image = models.ImageField(upload_to="images/")
+    content = models.TextField(blank=True, verbose_name="Текст новости")
+    image = models.ImageField(upload_to="images/", verbose_name="Изображение")
     time_create = models.DateTimeField(auto_now_add=True);
     time_update = models.DateTimeField(auto_now=True);
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
+    category_id = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, verbose_name="Жанр")
+    author_id = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, verbose_name="Автор")
 
     def __str__(self):
         return self.title
