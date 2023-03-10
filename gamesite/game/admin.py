@@ -9,7 +9,7 @@ class GameAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title", )}
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('category_id', 'name')
+    list_display = ('category_id', 'name', 'desciption')
     list_display_links = ('category_id', 'name')
     search_fields = ('name',)
     prepopulated_fields = {"slug": ("name",)}

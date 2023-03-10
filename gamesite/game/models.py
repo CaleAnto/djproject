@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
+
 import datetime
+import os
 
 # Create your models here.
 
@@ -35,15 +37,26 @@ class Author(models.Model):
     def __str__(self):
         return self.username
 
+def rename_file(instance, filename):
+    name = filename.split('.')[-1]
+    if instance.news_id is None:
+        newsid = News.objects.all().last().news_id + 1
+        filename = "%s_%s-%s.%s" % (newsid, 'image', instance.category_id, name)
+    else:
+        filename = "%s_%s-%s.%s" % (instance.news_id, 'image', instance.category_id, name)
+
+
+    return os.path.join("images/", filename)
+
 class News(models.Model):
     news_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, verbose_name="Тема новости")
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
     content = models.TextField(blank=True, verbose_name="Текст новости")
-    image = models.ImageField(upload_to="images/", verbose_name="Изображение")
+    image = models.ImageField(upload_to=rename_file, verbose_name="Изображение")
     time_create = models.DateTimeField(auto_now_add=True);
     time_update = models.DateTimeField(auto_now=True);
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, verbose_name="Жанр")
+    category_id = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, verbose_name="Жанр")
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, verbose_name="Автор")
 
     def __str__(self):
