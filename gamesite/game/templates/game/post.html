@@ -96,23 +96,6 @@
         </li>
     {% endfor %}
 
-{#        <li>#}
-{#            <a href="#">#}
-{#                Sign In#}
-{#            </a>#}
-{#        </li>#}
-{##}
-{#        <li>#}
-{#            <a href="#">#}
-{#                Log In#}
-{#            </a>#}
-{#        </li>#}
-{##}
-{#        <li>#}
-{#            <a href="{% url 'about' %}">#}
-{#                About#}
-{#            </a>#}
-{#        </li>#}
 
                     </ul>
         </li>
@@ -138,10 +121,115 @@
 
 </header>
 
-{% if news.image %}
-    <img src="{{ news.image.url }}" width="200px" height="100px" alt="">
-{% endif %}
+<div class="container">
+    <ul class="nk-breadcrumbs">
 
-<p>{{ news.content|linebreaks }}</p>
+
+        <li><a href="{% url 'home' %}">Home</a></li>
+
+        <li><svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fa" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg=""><path fill="currentColor" d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path></svg><!-- <span class="fa fa-angle-right"></span> --></li>
+
+        <li><a href="{{ news.get_absolute_url }}">Blog</a></li>
+
+        <li><svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fa" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg=""><path fill="currentColor" d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path></svg><!-- <span class="fa fa-angle-right"></span> --></li>
+
+        <li><span>{{ news.title }}</span></li>
+</::after>
+
+    </ul>
+</div>
+
+
+<div class="nk-gap-1"></div>
+
+
+<div class="container">
+    <div class="row vertical-gap">
+        <div class="col-lg-8">
+
+            <div class="nk-post-img">
+                <img src="{{ news.image.url }}" alt="--">
+            </div>
+
+            <div class="nk-gap-1"></div>
+
+
+            <div class="nk-post-by">
+                        {{ news.get_absolute_time }}
+
+                        <div class="nk-post-categories">
+                            <span class="bg-main-{{ news.category_id_id }}">{{ news.category_id }}</span>
+                        </div>
+            </div>
+
+            <div class="nk-gap"></div>
+
+            <p>{{ news.content|linebreaks }}</p>
+
+            <div class="nk-gap"></div>
+
+            <div class="nk-gap"></div>
+
+        </div>
+        <div class="col-lg-4">
+            <!--
+                START: Sidebar
+
+                Additional Classes:
+                    .nk-sidebar-left
+                    .nk-sidebar-right
+                    .nk-sidebar-sticky
+            -->
+            <aside class="nk-sidebar nk-sidebar-right nk-sidebar-sticky">
+                <div class="nk-widget">
+    <div class="nk-widget-content">
+        <form action="#" class="nk-form nk-form-style-1" novalidate="novalidate">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Type something...">
+                <button class="nk-btn nk-btn-color-main-1"><span class="ion-search"></span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="nk-widget nk-widget-highlighted">
+    <h4 class="nk-widget-title"><span><span class="text-main-1">Popular</span> News</span></h4>
+    <div class="nk-widget-content">
+
+            <div class="nk-widget-post">
+                {% if news.image %}
+                <a href="#" class="nk-post-image">
+                    <img src="assets/images/post-1-sm.jpg" alt="">
+                </a>
+                {% endif %}
+                <h3 class="nk-post-title"><a href="#">Lorem ipsum dolor sit amet, consectetur</a></h3>
+                <div class="nk-post-date"><span class="fa fa-calendar"></span> Feb 15, 2023</div>
+            </div>
+
+            <div class="nk-widget-post">
+                <a href="#" class="nk-post-image">
+                    <img src="assets/images/post-2-sm.jpg" alt="">
+                </a>
+                <h3 class="nk-post-title"><a href="#">Lorem ipsum dolor sit amet, consectetur </a></h3>
+                <div class="nk-post-date"><span class="fa fa-calendar"></span> Feb 15, 2023</div>
+            </div>
+
+            <div class="nk-widget-post">
+                <a href="#" class="nk-post-image">
+                    <img src="assets/images/post-3-sm.jpg" alt="">
+                </a>
+                <h3 class="nk-post-title"><a href="#">Lorem ipsum dolor sit amet, consectetur</a></h3>
+                <div class="nk-post-date"><span class="fa fa-calendar"></span> Feb 14, 2023</div>
+            </div>
+
+    </div>
+</div>
+
+            </aside>
+            <!-- END: Sidebar -->
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

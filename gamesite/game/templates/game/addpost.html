@@ -17,8 +17,6 @@
 
     <!-- START: Styles -->
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7cOpen+Sans:400,700" rel="stylesheet" type="text/css">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="{% static 'game/css/vendor/bootstrap/dist/css/bootstrap.min.css' %}">
@@ -27,27 +25,14 @@
     <script defer src="{% static 'game/css/vendor/fontawesome-free/js/all.js' %}"></script>
     <script defer src="{% static 'game/css/vendor/fontawesome-free/js/v4-shims.js' %}"></script>
 
-    <!-- IonIcons -->
-    <link rel="stylesheet" href="assets/vendor/ionicons/css/ionicons.min.css">
-
-    <!-- Flickity -->
-    <link rel="stylesheet" href="assets/vendor/flickity/dist/flickity.min.css">
-
     <!-- Photoswipe -->
     <link rel="stylesheet" type="text/css" href="{% static 'game/css/vendor/photoswipe/dist/photoswipe.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'game/css/vendor/photoswipe/dist/default-skin/default-skin.css' %}">
 
-    <!-- Seiyria Bootstrap Slider -->
-    <link rel="stylesheet" href="assets/vendor/bootstrap-slider/dist/css/bootstrap-slider.min.css">
-
-    <!-- Summernote -->
-    <link rel="stylesheet" type="text/css" href="assets/vendor/summernote/dist/summernote-bs4.css">
 
     <!-- GoodGames -->
     <link rel="stylesheet" href="{% static 'game/css/goodgames.css' %}">
 
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="assets/css/custom.css">
 
     <!-- END: Styles -->
 
@@ -140,14 +125,18 @@
 
 {% block content %}
 
-<form action="{% url 'add_post' %}" method="post" enctype="multipart/form-data">
+<form style="padding: 50px 400px" action="{% url 'add_post' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <div class="form-error">{{form.non_field_errors}}</div>
 
     {% for f in form %}
 
-    <p><label class="form-label" for="{{ f.id_for_label }}">{{f.label}}: </label>{{ f }}</p>
+    <p><label class="form-label" for="{{ f.id_for_label }}">{{f.label}}: </label> <br> {{ f }}</p>
+
+{#        <div class="nk-gap"></div>#}
+{#        <input type="email" value="" name="email" class=" form-control" placeholder="Email">#}
+
     <div class="form-error">{{ f.errors }}</div>
 
     {% endfor %}
