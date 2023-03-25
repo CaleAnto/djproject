@@ -6,6 +6,16 @@ import os
 
 # Create your models here.
 
+def rename_file(path, filename):
+    name = filename.split('.')[-1]
+    if path.news_id is None:
+        newsid = News.objects.all().last().news_id + 1
+        filename = "%s_%s-%s.%s" % (newsid, 'image', path.category_id, name)
+    else:
+        filename = "%s_%s-%s.%s" % (path.news_id, 'image', path.category_id, name)
+
+
+    return os.path.join("images/", filename)
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=255)
@@ -37,17 +47,6 @@ class Author(models.Model):
     def __str__(self):
         return self.username
 
-def rename_file(instance, filename):
-    name = filename.split('.')[-1]
-    if instance.news_id is None:
-        newsid = News.objects.all().last().news_id + 1
-        filename = "%s_%s-%s.%s" % (newsid, 'image', instance.category_id, name)
-    else:
-        filename = "%s_%s-%s.%s" % (instance.news_id, 'image', instance.category_id, name)
-
-
-    return os.path.join("images/", filename)
-
 class News(models.Model):
     news_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, verbose_name="Тема новости")
@@ -62,8 +61,11 @@ class News(models.Model):
     def __str__(self):
         return self.title
 
-    def get_absolute_time(self):
+    def get_create_time(self):
         return format(self.time_create.strftime('%b %d, %Y'))
+
+    def get_update_time(self):
+        return format(self.time_update.strftime('%b %d, %Y'))
 
     def get_absolute_comment(self):
         return len(Comment.objects.filter(news_id=self.news_id))

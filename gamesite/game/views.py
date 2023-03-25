@@ -2,43 +2,22 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
+from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import *
 from .forms import *
+from .utils import *
 
-# Create your views here.
-
-menu = [{'title': "About", 'url_name': 'about'},
-        {'title': 'Add News', 'url_name': 'add_post'},
-        {'title': 'FeedBack', 'url_name': 'contact'},
-        {'title': 'Log In', 'url_name': 'login'},
-]
-
-# def index(request):
-#     news = News.objects.all()
-#     cats = Category.objects.all()
-#
-#     context = {
-#         'news': news,
-#         'cats': cats,
-#         'menu': menu,
-#         'title': 'Main Page',
-#         'cat_selected': 0,
-#     }
-#     return render(request, 'game/index.html', context=context)
-
-class GameHome(ListView):
+class GameHome(DataMixin, ListView):
     model = News
     template_name = 'game/index.html'
     context_object_name = 'news'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Main Page'
-        context['cat_selected'] = 0
-        context['cats'] = Category.objects.all()
-        return context
+        c_def = self.get_user_context(title="Main Page")
+        return context | c_def
 
 def about(request):
     news = News.objects.all()
@@ -53,16 +32,17 @@ def about(request):
 def login(request):
     return HttpResponse("Login")
 
-class AddPage(CreateView):
+class AddPage(LoginRequiredMixin,DataMixin, CreateView):
     form_class = AddNewsForm
     template_name = 'game/addpost.html'
     success_url = reverse_lazy('home')
+    login_url = reverse_lazy('home')
+    raise_exception = True
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Add Page News'
-        return context
+        c_def = self.get_user_context(title="Add Page News")
+        return context | c_def
 
 # def addpost(request):
 #     if request.method == 'POST':
@@ -85,7 +65,7 @@ class AddPage(CreateView):
 def contact(request):
     return HttpResponse("FeedBack")
 
-class GameDetail(DetailView):
+class GameDetail(DataMixin, DetailView):
     model = News
     template_name = 'game/post.html'
     slug_url_kwarg = 'post_slug'
@@ -93,16 +73,10 @@ class GameDetail(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Post'
-        return context
+        c_def = self.get_user_context()
+        return context | c_def
 
-# def show_post(request, post_slug):
-#     news = get_object_or_404(News, slug=post_slug);
-#     comment = len(Comment.objects.filter(news_id=news.news_id))
-#     return HttpResponse(f"Отображение статьи с id = {post_slug} {news.get_absolute_time()} {comment}" )
-
-class GameCategory(ListView):
+class GameCategory(DataMixin, ListView):
     model = News
     template_name = 'game/index.html'
     context_object_name = 'news'
@@ -113,12 +87,10 @@ class GameCategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Category - ' + str(context['news'][0].category_id)
-        context['cat_selected'] = context['news'][0].category_id_id
-        context['category_selected'] = context['news'][0].category_id
-        context['cats'] = Category.objects.all()
-        return context
+        c_def = self.get_user_context(title='Category - ' + str(context['news'][0].category_id),
+                                      cat_selected = context['news'][0].category_id_id,
+                                      category_selected = context['news'][0].category_id)
+        return context | c_def
 
 # def show_category(request, post_slug):
 #     category = get_object_or_404(Category, slug=post_slug)
