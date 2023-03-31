@@ -1,9 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import logout
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
-from django.db.models import Count
+from django.db.models import Q, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 
 from .models import *
 from .forms import *
@@ -19,18 +22,17 @@ class GameHome(DataMixin, ListView):
         c_def = self.get_user_context(title="Main Page")
         return context | c_def
 
-def about(request):
-    news = News.objects.all()
+    def get_queryset(self):
+        return News.objects.annotate(count=Count('comment')).select_related('category_id')
 
-    context = {
-        'news': news,
-        'menu': menu,
-        'title': 'About',
-    }
-    return render(request, 'game/about.html', context=context)
+class GameAbout(DataMixin, ListView):
+    model = News
+    template_name = 'game/about.html'
 
-def login(request):
-    return HttpResponse("Login")
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="About")
+        return context | c_def
 
 class AddPage(LoginRequiredMixin,DataMixin, CreateView):
     form_class = AddNewsForm
@@ -44,24 +46,6 @@ class AddPage(LoginRequiredMixin,DataMixin, CreateView):
         c_def = self.get_user_context(title="Add Page News")
         return context | c_def
 
-# def addpost(request):
-#     if request.method == 'POST':
-#         form = AddNewsForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             #print(form.cleaned_data)
-#             form.save()
-#             return redirect('home')
-#
-#     else:
-#         form = AddNewsForm
-#
-#     context = {
-#         'menu': menu,
-#         'form': form,
-#         'title': 'Add Page News',
-#     }
-#     return render(request, 'game/addpost.html', context=context)
-
 def contact(request):
     return HttpResponse("FeedBack")
 
@@ -73,7 +57,7 @@ class GameDetail(DataMixin, DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context()
+        c_def = self.get_user_context(category_selected = context['news'].category_id)
         return context | c_def
 
 class GameCategory(DataMixin, ListView):
@@ -83,39 +67,90 @@ class GameCategory(DataMixin, ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return News.objects.filter(category_id__slug=self.kwargs['post_slug'])
+        return News.objects.annotate(count=Count('comment')).filter(category_id__slug=self.kwargs['post_slug']).select_related('category_id')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Category - ' + str(context['news'][0].category_id),
-                                      cat_selected = context['news'][0].category_id_id,
-                                      category_selected = context['news'][0].category_id)
+        c = Category.objects.get(slug=self.kwargs['post_slug'])
+        c_def = self.get_user_context(title='Category - ' + c.name,
+                                      cat_selected = c.category_id,
+                                      category_selected = c.name)
         return context | c_def
 
-# def show_category(request, post_slug):
-#     category = get_object_or_404(Category, slug=post_slug)
-#     news = News.objects.filter(category_id=category.category_id)
-#     cats = Category.objects.all()
-#
-#     context = {
-#         'news': news,
-#         'cats': cats,
-#         'menu': menu,
-#         'title': 'Main Page',
-#         'category_selected': category,
-#         'cat_selected': category.category_id,
-#     }
-#     return render(request, 'game/index.html', context=context)
+class GameSearch(DataMixin, ListView):
+    model = News
+    template_name = 'game/index.html'
+    context_object_name = 'news'
+    allow_empty = True
 
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if(query != " "):
+            return News.objects.filter( Q(title__iregex=query) )
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Search", q = self.request.GET.get('q'))
+        return context | c_def
+
+class RegisterUser(DataMixin, CreateView):
+    form_class = RegisterUserForm
+    template_name = 'game/register.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Register")
+        return context | c_def
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'game/login.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Login")
+        return context | c_def
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
+
+
+#Error def
 
 def pageNotFound(request, exception):
-    return HttpResponseNotFound('<h1>Страница не найдена</h1>')
+    context = {
+        'title': 'Error Page - 404',
+        'error': '404'
+    }
+    return render(request, 'game/errorPage.html', context=context)
 
 def pageNotAccess(request, *args, **argv):
-    return HttpResponse('<h1>У страницы нет доступа</h1>')
+    context = {
+        'title': 'Error Page - 403',
+        'error': '403'
+    }
+    return render(request, 'game/errorPage.html', context=context)
 
 def pageBadRequest(request, *args, **argv):
-    return HttpResponse('<h1>Некоретный запрос</h1>')
+    context = {
+        'title': 'Error Page - 400',
+        'error': '400'
+    }
+    return render(request, 'game/errorPage.html', context=context)
 
 def internalServerError(request):
-    return HttpResponse('<h1>Нет доступа к серверу</h1>')
+    context = {
+        'title': 'Error Page - 500',
+        'error': '500'
+    }
+    return render(request, 'game/errorPage.html', context=context)

@@ -1,5 +1,8 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.utils.translation import gettext_lazy as _
 
 import datetime
 import os
@@ -16,11 +19,27 @@ def rename_file(path, filename):
 
 
     return os.path.join("images/", filename)
-class User(models.Model):
+class User(AbstractBaseUser):
+    REQUIRED_FIELDS = ('username', 'password', 'email')
+
+    username_validator = UnicodeUsernameValidator()
+
     user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
+    username = models.CharField(
+        _("username"),
+        max_length=255,
+        unique=True,
+        validators=[username_validator],
+    )
+    password = models.CharField(_("password"), max_length=255)
+    email = models.EmailField(_("email"), max_length=255)
+    is_superuser = models.BooleanField(_("Superuser"), default=False)
+    is_author = models.BooleanField(_("Author"),default=False)
+
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
+
 
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
@@ -67,8 +86,6 @@ class News(models.Model):
     def get_update_time(self):
         return format(self.time_update.strftime('%b %d, %Y'))
 
-    def get_absolute_comment(self):
-        return len(Comment.objects.filter(news_id=self.news_id))
 
     def get_absolute_url(self):
         return reverse('post', kwargs={'post_slug': self.slug})
@@ -76,6 +93,7 @@ class News(models.Model):
     class Meta:
         verbose_name = "Новости"
         verbose_name_plural = "Новости"
+        ordering = ['news_id']
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
