@@ -1,51 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-    <title>{{ title }}</title>
-
-    <meta name="description" content="GoodGames - Bootstrap template for communities and games store">
-    <meta name="keywords" content="game, gaming, template, HTML template, responsive, Bootstrap, premium">
-    <meta name="author" content="_nK">
-
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- START: Styles -->
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7cOpen+Sans:400,700" rel="stylesheet" type="text/css">
-
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="{% static 'game/css/vendor/bootstrap/dist/css/bootstrap.min.css' %}">
-
-    <!-- FontAwesome -->
-    <script defer src="{% static 'game/css/vendor/fontawesome-free/js/all.js' %}"></script>
-    <script defer src="{% static 'game/css/vendor/fontawesome-free/js/v4-shims.js' %}"></script>
-
-
-    <!-- Photoswipe -->
-    <link rel="stylesheet" type="text/css" href="{% static 'game/css/vendor/photoswipe/dist/photoswipe.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'game/css/vendor/photoswipe/dist/default-skin/default-skin.css' %}">
-
-
-    <!-- GoodGames -->
-    <link rel="stylesheet" href="{% static 'game/css/goodgames.css' %}">
-
-    <!-- END: Styles -->
-
-    <!-- jQuery -->
-    <script src="{% static 'game/css/vendor/jquery/dist/jquery.min.js' %}"></script>
-
-
-</head>
-
-<body>
-        <div style="margin-top: 300px; width: 700px;margin-left: 750px">
-            <div>
+{% extends 'game/base.html' %}
+{% block content %}
+        <div style="display: flex; justify-content: center; align-items: center; margin-top: 17%">
+            <div style="width: 700px;">
                 <h4 class="mb-0"><span class="text-main-1">Sign</span> Up</h4>
 
                 <div class="nk-gap-1"></div>
@@ -84,5 +40,4 @@
                 </form>
             </div>
         </div>
-</body>
-</html>
+{% endblock %}
