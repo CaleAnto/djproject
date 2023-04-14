@@ -1,18 +1,22 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import logout
-from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import render, redirect
+from django.contrib.auth import logout, login
 from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.urls import reverse_lazy
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from random import randrange
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .serializers import *
 
 from .models import *
+from django.contrib.auth.models import User
 from .forms import *
 from .utils import *
 
+#Game Views
 class GameHome(DataMixin, ListView):
     model = News
     template_name = 'game/index.html'
@@ -35,7 +39,7 @@ class GameAbout(DataMixin, ListView):
         c_def = self.get_user_context(title="About")
         return context | c_def
 
-class AddPage(LoginRequiredMixin,DataMixin, CreateView):
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddNewsForm
     template_name = 'game/addpost.html'
     success_url = reverse_lazy('home')
@@ -136,6 +140,124 @@ def logout_user(request):
     logout(request)
     return redirect('home')
 
+
+
+#Api views
+
+class GameNewsApiView(APIView):
+    def get(self, request):
+        news = News.objects.all()
+        return Response({'posts': NewsSerializer(news, many=True).data})
+
+    def post(self, request):
+        serializer = NewsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({'post': serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method PUT not allowed"})
+
+        try:
+            instance = News.objects.get(news_id=pk)
+        except:
+            return Response({"error": "Object does not exists"})
+
+        serializer = NewsSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"post": serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method DELETE not allowed"})
+
+        news = News.objects.get(news_id=pk)
+        news.delete()
+
+        return Response({"post": "Delete post " + str(pk)})
+
+class GameCategoryApiView(generics.ListAPIView):
+    def get(self, request):
+        category = Category.objects.all()
+        return Response({'category': CategorySerializer(category, many=True).data})
+
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({'category': serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method PUT not allowed"})
+
+        try:
+            instance = Category.objects.get(news_id=pk)
+        except:
+            return Response({"error": "Object does not exists"})
+
+        serializer = CategorySerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"category": serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method DELETE not allowed"})
+
+        category = Category.objects.get(news_id=pk)
+        category.delete()
+
+        return Response({"category": "Delete post " + str(pk)})
+
+class GameCommentsApiView(generics.ListAPIView):
+
+    def get(self, request):
+        comment = Comment.objects.get()
+        return Response({'comments': CommentsSerializer(comment, many=True).data})
+
+    def post(self, request):
+        serializer = CommentsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({'comments': serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method PUT not allowed"})
+
+        try:
+            instance = Category.objects.get(news_id=pk)
+        except:
+            return Response({"error": "Object does not exists"})
+
+        serializer = CommentsSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"comments": serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"error": "Method DELETE not allowed"})
+
+        category = Category.objects.get(news_id=pk)
+        category.delete()
+
+        return Response({"comments": "Delete post " + str(pk)})
 
 #Error def
 

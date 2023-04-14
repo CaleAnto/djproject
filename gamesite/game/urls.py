@@ -15,5 +15,10 @@ urlpatterns = [
     path('post/<slug:post_slug>/', GameDetail.as_view(), name='post'),
     path('search/', GameSearch.as_view(), name='search'),
     path('category/<slug:post_slug>/', GameCategory.as_view(), name='category'),
+
+    path('api/v1/newslist', GameNewsApiView.as_view(), name='apiNews'),
+    path('api/v1/newslist/<int:pk>/', GameNewsApiView.as_view(), name='apiNewsUpdate'),
+    path('api/v1/categorylist', GameCategoryApiView.as_view() , name='apiCategory'),
+    path('api/comment', GameCommentsApiView.as_view() , name='apiComment'),
 ]
 
