@@ -23,10 +23,5 @@ urlpatterns = [
     path('category/<slug:post_slug>/', GameCategory.as_view(), name='category'),
 
     path('api/v1/', include(router.urls), name='apiNews'),
-
-
-
-    path('api/v1/categorylist', GameCategoryApiView.as_view(), name='apiCategory'),
-    path('api/comment', GameCommentsApiView.as_view(), name='apiComment'),
 ]
 
