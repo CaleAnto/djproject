@@ -1,11 +1,9 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.dispatch import receiver
 
-import datetime
 import os
 
 # Create your models here.
@@ -52,12 +50,16 @@ class News(models.Model):
     def __str__(self):
         return self.title
 
+    def delete_news_image(sender, instance, **kwargs):
+        if instance.image:
+            if os.path.isfile(instance.image.path):
+                os.remove(instance.image.path)
+
     def get_create_time(self):
         return format(self.time_create.strftime('%b %d, %Y'))
 
     def get_update_time(self):
         return format(self.time_update.strftime('%b %d, %Y'))
-
 
     def get_absolute_url(self):
         return reverse('post', kwargs={'post_slug': self.slug})

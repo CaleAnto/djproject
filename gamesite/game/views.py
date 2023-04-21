@@ -5,9 +5,12 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from rest_framework import generics
+from rest_framework import generics, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.files.storage import  default_storage
+from django.core.files.base import ContentFile
 
 from .serializers import *
 
@@ -144,120 +147,30 @@ def logout_user(request):
 
 #Api views
 
-class GameNewsApiView(APIView):
-    def get(self, request):
-        news = News.objects.all()
-        return Response({'posts': NewsSerializer(news, many=True).data})
+class NewsViewSet(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
 
-    def post(self, request):
-        serializer = NewsSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+    @action(methods=['get'], detail=True)
+    def category(self, request, pk):
+        news = News.objects.filter(category_id=pk)
+        serializer = self.get_serializer(news, many=True)
+        return Response(serializer.data)
 
-        return Response({'post': serializer.data})
+    @action(methods=['get'], detail=True)
+    def author(self, request, pk):
+        news = News.objects.filter(author_id=pk)
+        serializer = self.get_serializer(news, many=True)
+        return Response(serializer.data)
 
-    def put(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({"error": "Method PUT not allowed"})
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-        try:
-            instance = News.objects.get(news_id=pk)
-        except:
-            return Response({"error": "Object does not exists"})
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentsSerializer
 
-        serializer = NewsSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({"post": serializer.data})
-
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({"error": "Method DELETE not allowed"})
-
-        news = News.objects.get(news_id=pk)
-        news.delete()
-
-        return Response({"post": "Delete post " + str(pk)})
-
-class GameCategoryApiView(generics.ListAPIView):
-    def get(self, request):
-        category = Category.objects.all()
-        return Response({'category': CategorySerializer(category, many=True).data})
-
-    def post(self, request):
-        serializer = CategorySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({'category': serializer.data})
-
-    def put(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({"error": "Method PUT not allowed"})
-
-        try:
-            instance = Category.objects.get(news_id=pk)
-        except:
-            return Response({"error": "Object does not exists"})
-
-        serializer = CategorySerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({"category": serializer.data})
-
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({"error": "Method DELETE not allowed"})
-
-        category = Category.objects.get(news_id=pk)
-        category.delete()
-
-        return Response({"category": "Delete post " + str(pk)})
-
-class GameCommentsApiView(generics.ListAPIView):
-
-    def get(self, request):
-        comment = Comment.objects.get()
-        return Response({'comments': CommentsSerializer(comment, many=True).data})
-
-    def post(self, request):
-        serializer = CommentsSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({'comments': serializer.data})
-
-    def put(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({"error": "Method PUT not allowed"})
-
-        try:
-            instance = Category.objects.get(news_id=pk)
-        except:
-            return Response({"error": "Object does not exists"})
-
-        serializer = CommentsSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({"comments": serializer.data})
-
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({"error": "Method DELETE not allowed"})
-
-        category = Category.objects.get(news_id=pk)
-        category.delete()
-
-        return Response({"comments": "Delete post " + str(pk)})
 
 #Error def
 
