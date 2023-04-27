@@ -3,7 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout, login
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Q
 
 from rest_framework.decorators import action
@@ -138,8 +139,7 @@ class LoginUser(DataMixin, LoginView):
 
 def logout_user(request):
     logout(request)
-    return redirect('home')
-
+    return HttpResponseRedirect(reverse('home'))
 
 
 #Api views

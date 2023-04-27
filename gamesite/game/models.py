@@ -42,8 +42,8 @@ class News(models.Model):
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
     content = models.TextField(blank=True, verbose_name="Текст")
     image = models.ImageField(upload_to=rename_file, verbose_name="Изображение")
-    time_create = models.DateTimeField(auto_now_add=True);
-    time_update = models.DateTimeField(auto_now=True);
+    time_create = models.DateTimeField(auto_now_add=True)
+    time_update = models.DateTimeField(auto_now=True)
     category_id = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, verbose_name="Жанр")
     author_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name="Автор")
 

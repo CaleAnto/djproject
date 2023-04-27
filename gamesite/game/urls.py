@@ -2,6 +2,7 @@ from django.views.decorators.cache import cache_page
 from django.urls import path, include, re_path
 from datetime import timedelta
 from rest_framework import routers
+from djoser.urls.authtoken import urlpatterns as authtoken_urls
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from .views import *
@@ -27,7 +28,6 @@ urlpatterns = [
     path('api/v1/', include(router.urls), name='apiNews'),
     path('api/v1/drf-auth/', include('rest_framework.urls')),
     path('api/v1/auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
 
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
