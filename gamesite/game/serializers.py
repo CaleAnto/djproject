@@ -1,9 +1,13 @@
-import os
-from uuid import uuid4
-from rest_framework import serializers
-from .models import *
-from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+
+from rest_framework import serializers
+
+from uuid import uuid4
+import os
+
+from .models import *
+
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -40,6 +44,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class CommentsSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.username')
     class Meta:
         model = Comment
         fields = "__all__"

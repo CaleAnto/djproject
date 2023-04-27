@@ -1,5 +1,6 @@
-from .models import *
 from django.db.models import Count
+from .models import *
+
 # from django.core.cache import cache
 
 menu = [{'title': "About", 'url_name': 'about'},

@@ -1,21 +1,18 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import logout, login
 from django.views.generic import ListView, DetailView, CreateView, FormView
-from django.urls import reverse_lazy
-from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from rest_framework import generics, viewsets
+from django.contrib.auth import logout, login
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.db.models import Q
+
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.core.files.storage import  default_storage
-from django.core.files.base import ContentFile
+from rest_framework import viewsets
 
 from .serializers import *
-
 from .models import *
-from django.contrib.auth.models import User
 from .forms import *
 from .utils import *
 
@@ -150,6 +147,7 @@ def logout_user(request):
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     @action(methods=['get'], detail=True)
     def category(self, request, pk):
@@ -163,6 +161,12 @@ class NewsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(news, many=True)
         return Response(serializer.data)
 
+    @action(methods=['get'], detail=False)
+    def recomends(self, request):
+        news = News.objects.annotate(count=Count('comment')).order_by('-count')[0:3]
+        serializer = self.get_serializer(news, many=True)
+        return Response(serializer.data)
+
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -170,6 +174,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentsSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
 
 #Error def
