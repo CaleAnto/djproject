@@ -1,6 +1,9 @@
 {% extends 'game/base.html' %}
 {% load static %}
+<<<<<<< HEAD
 {% load cache %}
+=======
+>>>>>>> origin/master
 {% block navbar %}
 <header class="nk-header nk-header-opaque">
 
@@ -30,7 +33,11 @@
                 </a>
 
                 <ul class="nk-nav nk-nav-right d-none d-lg-table-cell" data-nav-mobile="#nk-nav-mobile">
+<<<<<<< HEAD
 {% cache 60 sidebar %}
+=======
+
+>>>>>>> origin/master
     {% for m in menu %}
         <li>
             <a href="{% url m.url_name %}">
@@ -38,7 +45,10 @@
             </a>
         </li>
     {% endfor %}
+<<<<<<< HEAD
 {% endcache %}
+=======
+>>>>>>> origin/master
         <li>
             {% if request.user.is_authenticated %}
             <a href="{% url 'logout' %}">Logout</a>
